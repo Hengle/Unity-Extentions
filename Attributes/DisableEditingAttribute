@@ -1,0 +1,28 @@
+using UnityEditor;
+
+#if UNITY_EDITOR
+using UnityEngine;
+#endif
+
+/*
+Disable Editing Attribute by Lumikosen
+Feel free to use this as you want to, modify it how you like. Reupload it if you want.
+*/
+
+public class DisableEditingAttribute : PropertyAttribute { }
+
+#if UNITY_EDITOR
+
+[CustomPropertyDrawer(typeof(DisableEditingAttribute))]
+public class DisableEditing : PropertyDrawer
+{
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    {
+        bool cachedGUIEnabled = GUI.enabled;
+        GUI.enabled = false;
+        EditorGUI.PropertyField(position, property, label, true);
+        GUI.enabled = cachedGUIEnabled;
+    }
+}
+
+#endif
