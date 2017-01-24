@@ -1,0 +1,61 @@
+using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+/*
+Null Warning Attribute by Lumikosen
+Feel free to use this as you want to, modify it how you like. Reupload it if you want.
+*/
+
+public class NullWarningAttribute : PropertyAttribute { }
+
+#if UNITY_EDITOR
+
+[CustomPropertyDrawer(typeof(NullWarningAttribute))]
+public class NullWarningAttributeDrawer : PropertyDrawer
+{
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    {
+        Rect propertyFieldPosition = position;
+        propertyFieldPosition.height = 16;
+        EditorGUI.PropertyField(propertyFieldPosition, property);
+        HandleHelpBox(property, position);
+    }
+
+    public void HandleHelpBox(SerializedProperty property, Rect position)
+    {
+        Rect helpPosition = position;
+        helpPosition.y += 16;
+        helpPosition.height = 16;
+
+        if (!IsValid(property))
+        {
+            Color cachedGUIColor = GUI.color;
+            GUI.color = Color.red;
+            DrawHelpBox(helpPosition);
+            GUI.color = cachedGUIColor;
+        }
+    }
+
+    void DrawHelpBox(Rect position)
+    {
+        string message = "Value must not be Null!";
+        EditorGUI.HelpBox(position, message, MessageType.Error);
+    }
+
+    bool IsValid(SerializedProperty property)
+    {
+        return property.objectReferenceValue != null;
+    }
+
+    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+    {
+        if (!IsValid(property))
+            return 32;
+        return base.GetPropertyHeight(property, label);
+    }
+}
+
+#endif
